@@ -28,8 +28,6 @@ for movie in data["results"]:
 
 movies = data["results"]
     
- 
-
 with open("./dataset/movie_dataset.json", "w") as file:
     json.dump(movies, file, indent=4)
 
