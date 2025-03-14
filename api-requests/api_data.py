@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import json
 from datetime import datetime
+from termcolor import colored
 
 url = "https://api.themoviedb.org/3/discover/movie"
 
@@ -19,15 +20,22 @@ headers = {
 
 today = datetime.now().strftime("%Y-%m-%d")
 
-response = requests.get(url, headers=headers)
+movies = []
+total_pages = 500
 
-data = response.json()
-
-for movie in data["results"]:
-    movie["ingestion_date"] = today
-
-movies = data["results"]
-    
+for page in range(1, total_pages + 1):
+    try:
+        params = {
+            "page": page
+        }
+        response = requests.get(url, headers=headers, params=params)
+        data = response.json()
+        
+        for movie in data.get("results", []):
+            movie["ingestion_date"] = today
+            movies.append(movie)
+        print(colored(f"Página {page} inserida com sucesso!", "green"))
+    except:
+        print(colored(f"Erro ao inserir página.", "red"))
 with open("./dataset/movie_dataset.json", "w") as file:
     json.dump(movies, file, indent=4)
-
